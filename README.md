@@ -1,4 +1,4 @@
-# Weather_api_php-MVC-
+# Weather_api_android
 The respository contains Weather detail api access from worldweatheronline.com using Android
 Weather details using api access to © world weather online
 https://developer.worldweatheronline.com/  *Generate your api here

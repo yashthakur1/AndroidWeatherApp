@@ -1,5 +1,6 @@
 package com.example.phpmysql.weathertest;
 
+
 import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,11 +9,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.RequestQueue;
@@ -24,17 +27,21 @@ import com.android.volley.Request;
 import com.android.volley.Request.Method;
 import com.android.volley.toolbox.Volley;
 
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
 
 import java.net.HttpURLConnection;
 import java.util.HashMap;
 import java.util.Map;
 
+
 public class Home extends AppCompatActivity {
 
-    // JSON Node names
+
+    // JSON Node names 
     private static final String TAG_Weather = "weatherDesc";
     private static final String TAG_Condition = "current_condition";
     private static final String TAG_Location = "query";
@@ -43,19 +50,25 @@ public class Home extends AppCompatActivity {
     private static final String TAG = Home.class.getSimpleName();
     JSONArray contacts = null;
 
-    // Variables for activity_home elements
+
+    // Variables for activity_home elements 
     Button weatherify;
     EditText entercity;
     EditText enterstate;
     TextView locationtext;
     TextView temperaturetext;
 
+
     private JSONObject jsonObject;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+
+
 
 
 
@@ -65,29 +78,64 @@ public class Home extends AppCompatActivity {
         locationtext=(TextView) findViewById(R.id.locationtext);
         temperaturetext = (TextView) findViewById(R.id.temperaturetext);
 
+
         weatherify.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
 
+
                 final String city = entercity.getText().toString();
                 final String state = enterstate.getText().toString();
 
+
+                //trouble shoot the enter data in log files
                 Log.d(TAG,""+city);
                 Log.d(TAG,""+state);
 
-                JsonObjectRequest stringRequest=new JsonObjectRequest(Request.Method.POST,"http://api.worldweatheronline.com/free/v2/weather.ashx?",null,new Response.Listener<JSONObject>(){
+
+                JsonObjectRequest stringRequest=new JsonObjectRequest(Request.Method.POST,"http://api.worldweatheronline.com/free/v2/weather.ashx?key=29ae6fae85e088882d0e163a229cf&q="+city+","+state+"&format=Json",null,new Response.Listener<JSONObject>(){
+
 
                     @Override
                     public void onResponse(JSONObject s)  {
 
-                    Log.d(TAG, "Login Response: " + s.toString());
 
-                     //replace your working json retrieving code here
+                        Log.d(TAG, "Login Response: " + s.toString());
+
+                        try{
+
+
+                        String jsonstring=s.toString(0);
+
+                            //below is code for temperature text
+                        JSONArray conditionarr=s.getJSONObject("data").getJSONArray(TAG_Condition);
+
+                           // Log.d(TAG,jarr.toString());  remove comment to troubleshoot in logfiles
+
+                            JSONObject incondition=conditionarr.getJSONObject(0);
+                            String tempc =incondition.optString(TAG_Temperature).toString();
+                           //below is code for location text
+                            JSONArray locationarr=s.getJSONObject("data").getJSONArray("request");
+                            JSONObject inrequest=locationarr.getJSONObject(0);
+                            String locationquery=inrequest.optString(TAG_Location).toString();
+
+                            locationtext.setText(locationquery);
+                            temperaturetext.setText(tempc+"°C");
+                        }
+
+                        catch (JSONException e){
+                            Log.d(TAG,"error"+e);
+                        }
+
+
+
+
 
 
 
                     }
                 },new Response.ErrorListener(){
+
 
                     @Override
                     public void onErrorResponse(VolleyError volleyError) {
@@ -95,20 +143,26 @@ public class Home extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(),
                                 "Error Occured:", Toast.LENGTH_LONG).show();
 
+
                     }
                 })
-                {
+                        // hash map value passing has to be achieved yet
+                        //below code isn't stable
+               /* {
+
 
                     @Override
                     protected Map<String, String> getParams() {
-                        // Posting parameters to URL
+                        // Posting parameters to URL 
                         Map<String, String> params = new HashMap<String, String>();
-                        params.put("key", "29ae6fae85e088882d0e163a229cf");// Replace api key with Your api key
+                        params.put("key", "29ae6fae85e088882d0e163a229cf");// Replace api key with Your api key 
                         params.put("q", city+","+state);
                         params.put("format","JSON");
 
+
                         return params;
                     }
+
 
                     @Override
                     public Map<String, String> getHeaders() throws AuthFailureError {
@@ -116,38 +170,48 @@ public class Home extends AppCompatActivity {
                         params.put("Content-Type","application/x-www-form-urlencoded");
                         return params;
                     }
-                };
-               RequestQueue queue=Volley.newRequestQueue(getApplicationContext());
+                }*/;
+                RequestQueue queue=Volley.newRequestQueue(getApplicationContext());
                 queue.add(stringRequest);
             }
         });
 
 
+
+
     }
+
+
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the menu; this adds items to the action bar if it is present. 
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
+        // Handle action bar item clicks here. The action bar will 
+        // automatically handle clicks on the Home/Up button, so long 
+        // as you specify a parent activity in AndroidManifest.xml. 
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
+
+        //noinspection SimplifiableIfStatement 
         if (id == R.id.action_settings) {
             return true;
         }
+
 
         return super.onOptionsItemSelected(item);
     }
 
 
 
-}
+
+
+
+} 
